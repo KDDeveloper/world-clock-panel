@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <!-- ===== main view ===== -->
+    <section class="view view--main">
+      <header class="bar">
+        <h1>World Clock</h1>
+        <button id="fmt" class="chip" type="button" data-tip-align="right">24h</button>
+        <button id="theme" class="chip chip--icon" type="button" aria-label="Theme" data-tip-align="right"></button>
+        <button id="mode" class="chip chip--icon" type="button" aria-label="Open as" data-tip-align="right"></button>
+      </header>
+
+      <div id="pinned"></div>
+
+      <button id="open-convert" class="row-btn" type="button"
+              data-tip="Convert a time between zones" data-tip-pos="top">
+        <svg class="row-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 8h14M13 4l4 4-4 4M21 16H7M11 12l-4 4 4 4" />
+        </svg>
+        <span>Convert a time</span>
+        <svg class="row-btn__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
+      </button>
+
+      <div class="rule"></div>
+
+      <div id="zones"></div>
+
+      <button id="open-add" class="add-card" type="button" aria-label="Add a time zone" data-tip="Add a time zone" data-tip-pos="top">
+        <svg viewBox="0 0 24 24" class="plus" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </button>
+    </section>
+
+    <!-- ===== add view ===== -->
+    <section class="view view--add">
+      <header class="bar">
+        <button id="close-add" class="icon-btn" type="button" aria-label="Back" data-tip="Back to clocks" data-tip-align="left">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
+        <h1>Add time zone</h1>
+      </header>
+
+      <div class="search">
+        <svg viewBox="0 0 24 24" class="search__icon" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" />
+        </svg>
+        <input id="search" type="text" placeholder="Search city or region…" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div id="results" class="results"></div>
+    </section>
+
+    <!-- ===== convert view ===== -->
+    <section class="view view--convert">
+      <header class="bar">
+        <button id="close-convert" class="icon-btn" type="button" aria-label="Back"
+                data-tip="Back to clocks" data-tip-align="left">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
+        <h1>Convert time</h1>
+        <button id="conv-now" class="chip" type="button"
+                data-tip="Reset to the current time" data-tip-align="right">now</button>
+      </header>
+
+      <div id="convert-cards"></div>
+    </section>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

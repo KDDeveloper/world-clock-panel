@@ -1,0 +1,754 @@
+/* ============================================================
+   Type scale: 14px base, minor third (1.2)
+   32 hero · 15 title · 12 secondary · 11 metadata
+   Spacing: 4px grid
+   ============================================================ */
+
+:root {
+  /* Palette derived from icons/icon.svg:
+     #2563eb front card · #60a5fa middle card · #94a3b8 back card · #0f172a hands */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --t1: #0f172a;   /* primary   - the clock hands */
+  --t2: #334155;   /* secondary */
+  --t3: #64748b;   /* tertiary  */
+  --t4: #94a3b8;   /* metadata  - the back card */
+  --line: #e2e8f0;
+  --accent: #2563eb;      /* the front card */
+  --accent-hover: #1d4ed8;
+  --accent-soft: #eff6ff;
+  --on-accent: #ffffff;
+  --field: #f8fafc;
+  --ok: #15803d;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --tip-bg: #0f172a;
+  --tip-fg: #f8fafc;
+  color-scheme: light;
+}
+
+/* Dark applies when the OS asks for it, unless light is explicitly chosen. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --t1: #f1f5f9;
+    --t2: #cbd5e1;
+    --t3: #94a3b8;
+    --t4: #64748b;
+    --line: #334155;
+    --accent: #60a5fa;      /* the middle card reads better on dark */
+    --accent-hover: #93c5fd;
+    --accent-soft: #172554;
+    --on-accent: #0f172a;   /* white would fail contrast on the lighter blue */
+    --field: #0f172a;
+    --ok: #4ade80;
+    --shadow: none;
+    --tip-bg: #f1f5f9;
+    --tip-fg: #0f172a;
+    color-scheme: dark;
+  }
+}
+
+/* …and whenever dark is explicitly chosen, whatever the OS says. */
+:root[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --t1: #f1f5f9;
+  --t2: #cbd5e1;
+  --t3: #94a3b8;
+  --t4: #64748b;
+  --line: #334155;
+  --accent: #60a5fa;      /* the middle card reads better on dark */
+  --accent-hover: #93c5fd;
+  --accent-soft: #172554;
+  --on-accent: #0f172a;   /* white would fail contrast on the lighter blue */
+  --field: #0f172a;
+  --ok: #4ade80;
+  --shadow: none;
+  --tip-bg: #f1f5f9;
+  --tip-fg: #0f172a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* A popup is sized by its content, so height:100% would collapse to nothing.
+   The side panel supplies its own dimensions and needs none of this. */
+:root[data-mode="popup"],
+:root[data-mode="popup"] body {
+  width: 360px;
+  height: 560px;
+}
+
+body {
+  position: relative;
+  background: var(--bg);
+  color: var(--t1);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- view switching ---------- */
+
+.view {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease;
+}
+
+.view--add,
+.view--convert {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+body.adding .view--main,
+body.converting .view--main {
+  transform: translateX(-16%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.adding .view--add,
+body.converting .view--convert {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.view--convert { padding-bottom: 16px; }
+
+/* ---------- tooltips ---------- */
+
+[data-tip] { position: relative; }
+
+[data-tip]::after,
+[data-tip]::before {
+  position: absolute;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+[data-tip]::after {
+  content: attr(data-tip);
+  top: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 170px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--tip-bg);
+  color: var(--tip-fg);
+  font: 400 11px/1.35 system-ui, sans-serif;
+  text-align: center;
+}
+
+/* arrow */
+[data-tip]::before {
+  content: "";
+  top: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 3px solid transparent;
+  border-bottom-color: var(--tip-bg);
+}
+
+[data-tip]:hover::after,
+[data-tip]:hover::before,
+[data-tip]:focus-visible::after,
+[data-tip]:focus-visible::before {
+  opacity: 1;
+  transition-delay: 0.3s;
+}
+
+/* keep the bubble inside the panel near its edges */
+[data-tip-align="right"]::after { left: auto; right: 0; transform: none; }
+[data-tip-align="left"]::after  { left: 0; right: auto; transform: none; }
+
+/* flip above for controls near the bottom */
+[data-tip-pos="top"]::after {
+  top: auto;
+  bottom: calc(100% + 7px);
+}
+
+[data-tip-pos="top"]::before {
+  top: auto;
+  bottom: calc(100% + 1px);
+  border-bottom-color: transparent;
+  border-top-color: var(--tip-bg);
+}
+
+/* ---------- top bar ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--t3);
+  font: 500 11px/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.chip:hover { color: var(--t1); border-color: var(--t4); }
+
+.chip--icon {
+  width: 26px;
+  padding: 0;
+}
+
+.chip--icon svg { width: 14px; height: 14px; }
+
+.icon-btn {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  margin-left: -4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--t2);
+  cursor: pointer;
+}
+
+.icon-btn:hover { background: var(--field); color: var(--t1); }
+
+.rule {
+  height: 1px;
+  background: var(--line);
+  margin: 16px 0;
+}
+
+/* ---------- clock card ---------- */
+
+.card {
+  position: relative;
+  padding: 16px;
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+
+.card--utc {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ---------- drag to reorder ---------- */
+
+/* Held long enough to pick up: lifted, slightly larger, above its neighbours. */
+.card--drag {
+  z-index: 5;
+  cursor: grabbing;
+  border-color: var(--accent);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+  transform-origin: center;
+}
+
+/* Neighbours glide into the vacated slot; the dragged card follows the pointer
+   with no transition so it never lags behind. */
+.card--shift {
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+body.dragging .remove { opacity: 0; }
+
+/* header row: dot + city ......... offset badge + remove */
+.card__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Flag chip. The tint still carries the day/night signal the dot used to. */
+.flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  font-size: 15px;
+  line-height: 1;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+}
+
+/* the nudge lives on the glyphs, so border-box padding cannot halve it */
+.flag--code > span {
+  display: block;
+}
+
+/* Fallback when the platform has no flag glyphs: a country-code badge.
+   All-caps text has no descenders, so the line box centres with dead space
+   underneath and the glyphs read high. translateY moves the glyphs
+   themselves — padding would be halved by border-box re-centring. */
+.flag--code {
+  font: 600 10px/1 system-ui, sans-serif;
+  letter-spacing: 0;
+  color: var(--t2);
+}
+
+.flag--day   { background: rgba(245, 158, 11, 0.16); }
+.flag--dusk  { background: rgba(249, 115, 22, 0.16); }
+.flag--night { background: rgba(99, 102, 241, 0.18); }
+
+.names {
+  flex: 1;
+  min-width: 0;
+}
+
+.city {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--t1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.region {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--t4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--field);
+  color: var(--t3);
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.card--utc .badge { background: var(--surface); }
+
+.remove {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-right: -4px;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--t4);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .remove,
+.remove:focus-visible { opacity: 1; }
+
+.remove:hover { background: var(--field); color: #dc2626; }
+
+/* hero time — full width */
+.time {
+  display: block;
+  width: 100%;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--t1);
+}
+
+.time .secs {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--t4);
+  margin-left: 2px;
+}
+
+.time .period {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--t3);
+  margin-left: 4px;
+  text-transform: uppercase;
+}
+
+.meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--t3);
+}
+
+.meta .sep { color: var(--t4); margin: 0 6px; }
+
+/* ---------- copy actions ---------- */
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.copy {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--t2);
+  font: 500 11px/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.copy span { white-space: nowrap; }
+.copy svg { width: 13px; height: 13px; flex: none; }
+
+.copy:hover { border-color: var(--accent); color: var(--accent); }
+.copy.done { border-color: var(--ok); color: var(--ok); }
+
+/* ---------- add card ---------- */
+
+.add-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 72px;
+  padding: 16px;
+  border: 1.5px dashed var(--line);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--t4);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.add-card:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.plus { width: 26px; height: 26px; stroke-width: 1.75; }
+
+/* ---------- convert entry row ---------- */
+
+.row-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 12px/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.row-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.row-btn span { flex: 1; text-align: left; }
+
+.row-btn__icon { width: 15px; height: 15px; flex: none; }
+.row-btn__chev { width: 14px; height: 14px; flex: none; opacity: 0.7; }
+
+/* ---------- convert cards ---------- */
+
+.conv { margin-bottom: 0; }
+
+.conv__head { margin-bottom: 12px; }
+
+.zone-select {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--t1);
+  font: 500 13px/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 13px center, right 8px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.zone-select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.conv .time { font-size: 28px; }
+
+.conv__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.field {
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--t1);
+  font: 13px inherit;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.field:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.conv__stamp {
+  margin-top: 8px;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}
+
+.conv__stamp.bad {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.conv__hint {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--t4);
+}
+
+/* swap control sits between the two cards */
+.swap-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.swap-row::before,
+.swap-row::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.swap {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--t3);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+/* rotate the glyph, not the button — the tooltip is anchored to the button */
+.swap svg { transition: transform 0.2s ease; }
+
+.swap:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.swap:hover svg { transform: rotate(180deg); }
+
+/* ---------- search + results ---------- */
+
+.search {
+  position: relative;
+  flex: none;
+  margin-bottom: 12px;
+}
+
+.search__icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--t4);
+  pointer-events: none;
+}
+
+#search {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--field);
+  color: var(--t1);
+  font: 14px inherit;
+  font-family: inherit;
+}
+
+#search::placeholder { color: var(--t4); }
+
+#search:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 -16px;
+  padding: 0 8px 16px;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.result:hover { background: var(--field); }
+
+.result__names { flex: 1; min-width: 0; }
+
+.result__city {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--t1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result__region {
+  font-size: 11px;
+  color: var(--t4);
+}
+
+.result__time {
+  flex: none;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--t3);
+}
+
+.result[disabled] { opacity: 0.4; cursor: default; }
+.result[disabled]:hover { background: transparent; }
+
+.results__label {
+  margin: 0;
+  padding: 12px 8px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--t4);
+  letter-spacing: 0.02em;
+}
+
+.results__label:first-child { padding-top: 0; }
+
+.results__note {
+  padding: 16px 8px;
+  font-size: 12px;
+  color: var(--t4);
+  text-align: center;
+}
