@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="11 23 98 98">
+  <!-- Back Card (Time Zone 3) -->
+  <rect x="48" y="24" width="56" height="56" rx="12" fill="#94a3b8" />
+  
+  <!-- Middle Card (Time Zone 2) -->
+  <rect x="32" y="36" width="64" height="64" rx="14" fill="#60a5fa" />
+  
+  <!-- Front Card (UTC Clock) -->
+  <rect x="16" y="48" width="72" height="72" rx="16" fill="#2563eb" />
+  
+  <!-- Clock Face Background -->
+  <circle cx="52" cy="84" r="22" fill="#ffffff" />
+  
+  <!-- Clock Hands (Hour & Minute) -->
+  <path d="M52 72 V84 H62" stroke="#0f172a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  
+  <!-- Center Pin -->
+  <circle cx="52" cy="84" r="4" fill="#2563eb" />
+</svg>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — UTC World Clock</title>
+<meta name="description" content="UTC World Clock collects nothing, transmits nothing and requests no host permissions. Full privacy policy.">
+<link rel="icon" href="assets/icon.svg">
+<style>
+  :root {
+    --ground: #ffffff; --surface: #f7faff;
+    --ink: #0f172a; --ink-2: #334155; --muted: #64748b;
+    --line: #e2e8f0; --accent: #2563eb; --accent-soft: #eff6ff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0b1220; --surface: #111a2b;
+      --ink: #f1f5f9; --ink-2: #cbd5e1; --muted: #94a3b8;
+      --line: #1e293b; --accent: #60a5fa; --accent-soft: #15233d;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--ground); color: var(--ink);
+    font: 17px/1.68 system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 24px 80px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 24px 0 8px; }
+  header img { width: 28px; height: 28px; }
+  header a { color: var(--ink); font-size: 15px; font-weight: 650; text-decoration: none; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(30px, 5vw, 40px); font-weight: 700; letter-spacing: -0.03em; margin: 40px 0 6px; }
+  .date { color: var(--muted); font-size: 15px; margin-bottom: 34px; }
+  h2 { font-size: 19px; font-weight: 650; letter-spacing: -0.015em; margin: 38px 0 10px; }
+  p { margin-bottom: 14px; color: var(--ink-2); }
+  ul { margin: 0 0 16px; padding-left: 22px; color: var(--ink-2); }
+  li { margin-bottom: 7px; }
+  .lead {
+    padding: 20px 22px; border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0; background: var(--surface); font-size: 18px;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 18px; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  code {
+    font: 14px ui-monospace, "Cascadia Mono", Consolas, monospace;
+    background: var(--accent-soft); color: var(--ink-2); padding: 1px 5px; border-radius: 4px;
+  }
+  a { color: var(--accent); }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 24px; font-size: 14px; color: var(--muted); }
+  footer a { text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="assets/icon.svg" alt="">
+    <a href="index.html">UTC World Clock</a>
+  </header>
+
+  <h1>Privacy Policy</h1>
+  <p class="date">Last updated: 9 September 2026</p>
+
+  <p class="lead">
+    This extension collects nothing, transmits nothing and shares nothing. It makes no
+    network requests of any kind.
+  </p>
+
+  <h2>What is stored</h2>
+  <p>Your preferences are saved on your own device using <code>chrome.storage.local</code>:</p>
+  <ul>
+    <li>the time zones you have added, and the order you arranged them in</li>
+    <li>your 12- or 24-hour clock preference</li>
+    <li>your theme choice (system, light or dark)</li>
+    <li>whether the extension opens as a side panel or a popup</li>
+  </ul>
+  <p>That is the complete list. It never leaves your browser and is not synced to any account.</p>
+
+  <h2>What is not collected</h2>
+  <p>
+    No personally identifiable information. No browsing history. No web page content. No
+    location data. No authentication or financial information. No usage analytics,
+    telemetry or crash reporting. No cookies. No advertising or tracking identifiers.
+  </p>
+  <p>
+    There is no server component to this extension, so there is nowhere for such data to
+    be sent even in principle.
+  </p>
+
+  <h2>Permissions</h2>
+  <table>
+    <tr><th>Permission</th><th>Why it is needed</th></tr>
+    <tr><td><code>storage</code></td><td>Saves the preferences listed above, locally</td></tr>
+    <tr><td><code>sidePanel</code></td><td>The interface is a side panel; required to display and open it</td></tr>
+    <tr><td><code>alarms</code></td><td>Wakes the service worker once a minute to update the toolbar badge</td></tr>
+  </table>
+  <p>
+    The extension requests <strong>no host permissions</strong>. It has no ability to read,
+    modify or observe any website you visit, in any tab, at any time.
+  </p>
+
+  <h2>Time zone data</h2>
+  <p>
+    All time and offset calculations use the time zone database built into your own copy of
+    Chrome, through the standard <code>Intl</code> APIs. No external time service is contacted.
+  </p>
+
+  <h2>Removing your data</h2>
+  <p>
+    Removing the extension from <code>chrome://extensions</code> deletes everything it
+    stored. You can also clear it while keeping the extension installed by removing all
+    your added time zones.
+  </p>
+
+  <h2>Third parties</h2>
+  <p>
+    There are none. No analytics provider, no error reporting service, no advertising
+    network, no content delivery network. All code and assets ship inside the extension
+    package.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If this policy changes, the revised version will be published here and the date above
+    updated. Any change affecting what is collected would also require a new extension
+    release, which is publicly visible in the Chrome Web Store version history.
+  </p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy: <a href="https://kushaldavda.com">kushaldavda.com</a></p>
+
+  <footer>
+    <a href="index.html">← Back to UTC World Clock</a>
+  </footer>
+
+</div>
+</body>
+</html>

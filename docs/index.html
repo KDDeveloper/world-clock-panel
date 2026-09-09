@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UTC World Clock — a Chrome side panel by Kushal Davda</title>
+<meta name="description" content="UTC and every time zone you work with, docked in Chrome's side panel. Convert times, copy real ISO 8601 timestamps, search by city. No permissions, no tracking.">
+<link rel="icon" href="assets/icon.svg">
+<meta property="og:title" content="UTC World Clock — Chrome side panel">
+<meta property="og:description" content="Every time zone, one glance away. No permissions, no tracking.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --ground: #ffffff;
+    --surface: #f7faff;
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --accent: #2563eb;
+    --accent-soft: #eff6ff;
+    --on-accent: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0b1220;
+      --surface: #111a2b;
+      --ink: #f1f5f9;
+      --ink-2: #cbd5e1;
+      --muted: #94a3b8;
+      --line: #1e293b;
+      --accent: #60a5fa;
+      --accent-soft: #15233d;
+      --on-accent: #0f172a;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- header ---------- */
+
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 24px 0;
+  }
+  header img { width: 32px; height: 32px; }
+  header b { font-size: 16px; font-weight: 700; letter-spacing: -0.015em; }
+  header nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; }
+  header nav a { color: var(--muted); text-decoration: none; }
+  header nav a:hover { color: var(--ink); }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    padding: 56px 0 24px;
+    display: grid; gap: 22px; justify-items: start;
+    background:
+      radial-gradient(70% 90% at 80% 0%, var(--accent-soft) 0%, transparent 70%);
+  }
+  h1 {
+    font-size: clamp(38px, 6.5vw, 62px);
+    font-weight: 700; line-height: 1.03;
+    letter-spacing: -0.035em; max-width: 15ch;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lede { font-size: clamp(18px, 2.4vw, 21px); color: var(--muted); max-width: 52ch; }
+
+  .cta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 22px; border-radius: 10px;
+    background: var(--accent); color: var(--on-accent);
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--accent);
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; color: var(--ink-2); border-color: var(--line); }
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent); filter: none; }
+  .note { font-size: 14px; color: var(--muted); }
+
+  figure { margin: 40px 0 0; }
+  figure img {
+    width: 100%; height: auto; display: block;
+    border-radius: 12px; border: 1px solid var(--line);
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 72px 0; }
+  h2 {
+    font-size: clamp(26px, 3.4vw, 34px); font-weight: 700;
+    letter-spacing: -0.025em; margin-bottom: 12px; text-wrap: balance;
+  }
+  .sub { color: var(--muted); max-width: 60ch; margin-bottom: 34px; }
+
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card {
+    padding: 24px; border: 1px solid var(--line);
+    border-radius: 12px; background: var(--surface);
+  }
+  .card h3 { font-size: 17px; font-weight: 650; margin-bottom: 7px; letter-spacing: -0.01em; }
+  .card p { font-size: 15px; color: var(--muted); }
+  .card code {
+    font: 13px ui-monospace, "Cascadia Mono", Consolas, monospace;
+    color: var(--ink-2); background: var(--accent-soft);
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  .shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  .shots img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+
+  .privacy {
+    border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 0 12px 12px 0; background: var(--surface);
+    padding: 30px 32px;
+  }
+  .privacy ul { margin: 16px 0 0; padding-left: 20px; color: var(--muted); font-size: 15px; }
+  .privacy li { margin-bottom: 7px; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 34px 0 56px; margin-top: 40px;
+    display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+    font-size: 14px; color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+  footer .sp { margin-left: auto; }
+
+  a:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <img src="assets/icon.svg" alt="">
+    <b>UTC World Clock</b>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/kushaldavda/world-clock-panel">Source</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Every time zone, <em>one glance away</em></h1>
+    <p class="lede">
+      Your unified time centre. UTC and every zone you work with, docked in Chrome's side
+      panel — beside your work instead of on top of it.
+    </p>
+    <div class="cta">
+      <!-- Replace with the Chrome Web Store URL once the listing is live -->
+      <a class="btn" href="#">Add to Chrome</a>
+      <a class="btn ghost" href="https://github.com/kushaldavda/world-clock-panel">View source</a>
+      <span class="note">Free · No permissions · No account</span>
+    </div>
+    <figure><img src="assets/panel.png" alt="The extension open in Chrome's side panel beside a document, showing UTC and New York clocks"></figure>
+  </div>
+
+  <section id="features">
+    <h2>Built for people who actually need the offset</h2>
+    <p class="sub">
+      Most clock extensions are a popup that closes the moment you click away. This one
+      stays open, and gets the hard parts right.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>No permissions at all</h3>
+        <p>Check the install prompt — it asks for nothing. It cannot read, change or even see the pages you visit.</p>
+      </div>
+      <div class="card">
+        <h3>Search by city, not zone ID</h3>
+        <p>Mumbai, Bengaluru, NYC, Vegas, Joburg and hundreds more resolve to the right zone. No need to know that Mumbai lives in <code>Asia/Calcutta</code>.</p>
+      </div>
+      <div class="card">
+        <h3>Correct ISO 8601</h3>
+        <p>Copy gives you <code>2026-09-09T12:08:40+05:30</code> — the zone's real offset, with <code>Z</code> only where the offset is truly zero.</p>
+      </div>
+      <div class="card">
+        <h3>Daylight saving done right</h3>
+        <p>Offsets come from the browser's own time zone database, including the ambiguous hour that happens twice every autumn.</p>
+      </div>
+      <div class="card">
+        <h3>Two-way converter</h3>
+        <p>Set a time in one zone, read it in another. Edit either side — including pasting an ISO or Unix timestamp.</p>
+      </div>
+      <div class="card">
+        <h3>Day or night at a glance</h3>
+        <p>Each zone is tinted by its local time of day, so you know whether it's a reasonable hour before you call.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Convert and search</h2>
+    <p class="sub">Both directions stay in sync, and the zone list understands the names people actually use.</p>
+    <div class="shots">
+      <img src="assets/convert.png" alt="The converter showing UTC and Asia/Calcutta side by side">
+      <img src="assets/search.png" alt="Searching for mumbai and finding the Calcutta time zone">
+    </div>
+  </section>
+
+  <section id="privacy">
+    <h2>Nothing leaves your machine</h2>
+    <div class="privacy">
+      <p>
+        There is no server. The extension makes no network requests of any kind, and it
+        requests no host permissions, so it has no ability to observe your browsing.
+      </p>
+      <ul>
+        <li>Your zones, clock format and theme are stored locally via <code>chrome.storage.local</code></li>
+        <li>No analytics, telemetry, crash reporting or cookies</li>
+        <li>No account, no sign-in, no third-party services</li>
+        <li>Time calculations use the time zone database already built into Chrome</li>
+      </ul>
+      <p style="margin-top:18px">
+        <a href="privacy.html" style="color:var(--accent);font-weight:600;text-decoration:none">Read the full privacy policy →</a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <a href="privacy.html">Privacy</a>
+    <a href="https://github.com/kushaldavda/world-clock-panel">Source</a>
+    <a href="https://github.com/kushaldavda/world-clock-panel/issues">Support</a>
+    <span class="sp">Built by <a href="https://kushaldavda.com">Kushal Davda</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
