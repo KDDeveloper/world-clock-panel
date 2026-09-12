@@ -40,9 +40,7 @@ tell whether it is a reasonable hour before you call.
 
 ## Install
 
-From the Chrome Web Store *(link once published)*.
-
-To run from source:
+[**Add to Chrome**](https://chromewebstore.google.com/detail/world-clock-panel/jocioomjfikjikpjpiiamkgkggcgadcg) — or run it from source:
 
 1. Clone or download this repository
 2. Visit `chrome://extensions` and enable **Developer mode**
