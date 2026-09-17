@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "World Clock Panel",
-  "version": "1.0.0",
+  "name": "UTC World Clock Panel",
+  "version": "1.0.1",
   "description": "UTC and world clocks in Chrome's side panel. Convert times, copy ISO timestamps, search by city. No permissions, no tracking.",
   "minimum_chrome_version": "116",
   "icons": {
@@ -11,7 +11,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Open World Clock",
+    "default_title": "Open UTC World Clock",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",

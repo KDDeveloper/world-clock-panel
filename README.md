@@ -1,4 +1,4 @@
-# UTC World Clock &amp; Time Zone Converter
+# UTC World Clock Panel
 
 Your unified time centre — UTC and every time zone you work with, docked in Chrome's
 side panel beside your work instead of on top of it.
@@ -40,7 +40,7 @@ tell whether it is a reasonable hour before you call.
 
 ## Install
 
-[**Add to Chrome**](https://chromewebstore.google.com/detail/world-clock-panel/jocioomjfikjikpjpiiamkgkggcgadcg) — or run it from source:
+[**Add to Chrome**](https://chromewebstore.google.com/detail/jocioomjfikjikpjpiiamkgkggcgadcg) — or run it from source:
 
 1. Clone or download this repository
 2. Visit `chrome://extensions` and enable **Developer mode**

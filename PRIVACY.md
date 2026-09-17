@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**UTC World Clock &amp; Time Zone Converter**
+**UTC World Clock Panel**
 Last updated: 9 September 2026
 
 ## Summary
